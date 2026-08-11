@@ -1,6 +1,7 @@
 from playwright.async_api import Page
 from app.models.produto import Produto
 from app.scrapers.base import ScraperBase
+import asyncio 
 
 def converter_preco(texto: str) -> float:
     # Converte uma string de preço para float.
@@ -16,13 +17,15 @@ class ScraperMercadoLivre(ScraperBase):
 
     async def extrair(self, url: str) -> Produto:
         try:
-            await self.page.goto(url, timeout=15000)
+            await self.page.goto(url, timeout=60000, wait_until="domcontentloaded")
+            await asyncio.sleep(8)
+            await self.page.screenshot(path="debug.png")
 
-            nome = await self.page.locator(".ui-pdp-title").inner_text()
+            nome = await self.page.locator(".ui-pdp-title").inner_text(timeout=120000)
 
             preco_final_texto = await self.page.locator(
                 ".ui-pdp-price__second-line .andes-money-amount"
-            ).get_attribute("aria-label")
+            ).get_attribute("aria-label", timeout=120000)
             preco_final = converter_preco(preco_final_texto)
 
             preco_original = None

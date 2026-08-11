@@ -8,3 +8,5 @@ class Produto(BaseModel):
     preco_original: Optional[float] = None
     preco_final: Optional[float] = None
     imagem: Optional[str] = None
+    sucesso: bool = True
+    erro: Optional[str] = None
